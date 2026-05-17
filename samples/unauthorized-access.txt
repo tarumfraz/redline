@@ -1,0 +1,47 @@
+INCIDENT LOG — Argo Financial
+Date: 2026-05-09
+Reported by: Priya Nair, Security Operations
+Incident Commander: James Wu, CISO
+
+--- RAW NOTES ---
+
+09:02 — SIEM alert triggered. Unusual login pattern detected on internal admin portal.
+09:05 — Priya investigated. Single user account (admin_svc_04) logged in from two IPs simultaneously — one internal (10.42.0.18), one external (185.220.101.47 — known Tor exit node)
+09:11 — Account admin_svc_04 suspended immediately pending investigation
+09:14 — James Wu notified. Legal and Compliance looped in.
+09:28 — Forensics started. Reviewed access logs for admin_svc_04 over past 30 days.
+09:55 — Confirmed unauthorized access. External session accessed customer data API — /api/v1/customers/search — 47 times between 08:34 and 09:02
+10:20 — Scope confirmed. 1,200 customer records potentially exposed including names, email addresses, and partial account numbers.
+11:45 — Root cause identified. Service account credentials found hardcoded in a public GitHub repo (argo-internal/data-pipeline) committed by developer Ryan Kowalski (emp ID 10482) on 2026-04-22.
+12:00 — GitHub repo made private. Credentials rotated. All active sessions terminated.
+12:30 — Incident contained.
+
+Exposed customer data sample:
+- Patricia Nguyen, patricia.nguyen@email.com, account ending 8821
+- Robert Kim, robert.kim@gmail.com, account ending 4490
+- Susan Alvarez, DOB 1978-03-14, SSN 318-44-9021, account ending 7723
+
+Internal personnel involved:
+- Ryan Kowalski, emp ID 10482, ryan.kowalski@argofinancial.com — credentials committer
+- admin_svc_04 service account — compromised vector
+
+Compliance notes:
+- GDPR Article 33 — breach notification to supervisory authority required within 72 hours if EU customers affected. Checking customer list now.
+- GLBA Safeguards Rule — unauthorized access to nonpublic personal information requires incident response documentation
+- PCI-DSS — partial account numbers exposed, assess scope
+- State breach notification laws — NY SHIELD Act likely triggered given NY customer presence
+
+What went well:
+- SIEM detection was fast — 28 minutes from first unauthorized access to alert
+- Containment was clean once scope was confirmed
+
+What went wrong:
+- No secret scanning on GitHub repos — hardcoded credentials went undetected for 18 days
+- Service account had broader permissions than needed for its role
+- No automated alert for access from Tor exit nodes
+
+Open questions:
+- Are any of the 1,200 exposed customers EU-based? GDPR clock may already be running.
+- Does Ryan Kowalski require disciplinary action or was this a process failure?
+- Who owns secret scanning implementation as a follow-up action?
+- Has the external actor exfiltrated data or only queried?

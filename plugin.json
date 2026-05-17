@@ -1,0 +1,8 @@
+{
+  "name": "redline",
+  "description": "Redline takes in security incident data, masks PII, reviews it for security details, surfaces any security flags for human review, then produces an incident summary and posts it to Slack.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Tarum Fraz"
+  }
+}

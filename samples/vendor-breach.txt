@@ -1,0 +1,50 @@
+INCIDENT LOG — Argo Financial
+Date: 2026-05-11
+Reported by: Dana Flores, Vendor Risk Management
+Incident Commander: Tom Beaumont, Platform Engineering Lead
+
+--- RAW NOTES ---
+
+14:22 — Email received from KYC vendor Veritas ID notifying Argo of a security incident on their platform affecting data shared between 2026-03-01 and 2026-05-10
+14:35 — Dana escalated to Tom and Legal immediately
+14:50 — Emergency call with Veritas ID. Confirmed ransomware attack on their internal systems. Customer KYC data including government IDs and facial scan data potentially exfiltrated.
+15:30 — Argo data scope confirmed with Veritas. 842 Argo customers onboarded during the affected window have data at risk.
+16:00 — Decision made to suspend Veritas ID integration immediately. Fallback to manual KYC review for new onboarding.
+16:15 — Integration suspended. Engineering team notified.
+17:00 — Legal confirmed GDPR notification likely required — KYC data includes EU passport scans.
+17:30 — Began drafting customer notification letter.
+
+Data at risk per Veritas ID:
+- Full legal names
+- Government issued ID numbers (passport, drivers license)
+- Facial scan biometric data
+- Date of birth
+- Address history
+
+Sample affected customers confirmed by Veritas:
+- Ahmed Hassan, passport GB-9921044, DOB 1985-07-22, London UK
+- Maria Gonzalez, DL CA-8821933, DOB 1991-11-03, San Francisco CA
+- Wei Zhang, passport CN-E8821044, facial scan data included
+
+Compliance notes:
+- GDPR Article 33 — 72 hour notification clock started at 14:22 today. Deadline: 2026-05-14 14:22
+- CCPA — California customers affected, assess notification requirements
+- NY SHIELD Act — NY customers in scope
+- Biometric data — Illinois BIPA may apply if any IL customers affected
+- OCC notification — assess whether this meets threshold for mandatory regulator notification
+
+What went well:
+- Veritas notified us within 24 hours of their own discovery
+- Integration suspension was fast — under 2 hours from initial notification
+- Legal was looped in immediately
+
+What went wrong:
+- No contractual requirement for Veritas to maintain SOC 2 Type II — vendor risk gap
+- No data minimization — we were sending more customer data to Veritas than required for KYC
+- No real-time monitoring of third party data sharing activity
+
+Open questions:
+- GDPR clock is running — do we have a DPO assigned to file the Article 33 notification?
+- Which IL customers are in the 842 affected — BIPA exposure assessment needed urgently
+- Can Veritas confirm whether data was exfiltrated or only encrypted?
+- Do we notify all 842 customers now or wait for Veritas forensics to confirm scope?

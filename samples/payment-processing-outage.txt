@@ -1,0 +1,45 @@
+INCIDENT LOG — Argo Financial
+Date: 2026-05-14
+Reported by: Marcus Chen, On-Call Engineer
+Incident Commander: Sarah Okonkwo, Platform Lead
+
+--- RAW NOTES ---
+
+02:14 — PagerDuty alert fired. Payment processing service returning 503s. 
+02:16 — Marcus paged. Checked Datadog. Error rate at 94% on /api/v2/payments/submit
+02:19 — Sarah brought in. Started war room in #incident-p1 Slack channel
+02:31 — Identified spike in failed DB connections to payments-db-primary
+02:44 — Root cause found. Deployment at 01:52 introduced a connection pool misconfiguration. Max connections set to 5 instead of 500.
+02:51 — Rollback initiated by Derek Patel (deploy ID: dpl-882921)
+03:04 — Error rate back to baseline. Service confirmed healthy.
+03:10 — Post-incident monitoring started. No further anomalies.
+
+Affected customers during window:
+- John Ramirez, account #4820194, attempted transfer of $14,500 — failed
+- Linda Park, account #9912043, attempted bill payment to Chase — failed  
+- Michael Torres, SSN 542-88-1923, flagged for large transaction review — record exposed in error log
+- 3,847 additional transactions failed during the 50-minute window
+
+Financial impact:
+- Estimated $2.1M in failed transaction volume
+- 3 enterprise clients (Meridian Bank, Apex Capital, TrustCore) affected — SLA breach likely for Meridian
+
+Compliance notes:
+- Error logs inadvertently captured SSN for Michael Torres and full account numbers for affected users
+- Meridian Bank SLA requires 99.95% uptime — we were at 6% for 50 minutes
+- Possible PCI-DSS exposure — card-adjacent data in logs
+- Legal flagged potential CFPB notification requirement given volume of failed consumer transactions
+
+What went well:
+- Detection was fast, under 3 minutes from alert to human eyes
+- Rollback was clean, no data loss
+
+What went wrong:
+- Deployment went out at 2am without a second reviewer
+- Connection pool config was not part of automated pre-deploy checks
+- Error logs were not scrubbed before being written to shared logging platform
+
+Open questions:
+- Does the Meridian SLA breach trigger a contractual penalty?
+- Do we need to notify CFPB given consumer transaction failure volume?
+- Who is responsible for adding connection pool validation to deploy checklist?

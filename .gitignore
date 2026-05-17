@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Generated outputs from the plugin (keep folder, ignore contents)
+incidents/*
+!incidents/.gitkeep

@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file_path=$(jq -r '.tool_input.file_path // empty'); if [ -n \"$file_path\" ] && echo \"$file_path\" | grep -q 'incidents/'; then if [ ! -f \"$file_path\" ]; then echo \"ERROR: Incident file not found: $file_path\" >&2; exit 1; elif [ ! -s \"$file_path\" ]; then echo \"ERROR: Incident file is empty: $file_path\" >&2; exit 1; fi; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p \"${CLAUDE_PLUGIN_ROOT}/incidents\""
+          }
+        ]
+      }
+    ]
+  }
+}

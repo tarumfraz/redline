@@ -71,9 +71,3 @@ Invoke the `incident-reporter` agent with this instruction:
 Save the formatted report to the `incidents/` folder with a timestamped filename.
 Post the Slack summary.
 
----
-
-### 📂 Step 4 — Open Report
-After the incident-reporter completes, open the saved incident report file for the user.
-
-Run: open [path to saved report file]

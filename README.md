@@ -77,7 +77,6 @@ Open `skills/incident/SKILL.md`. Find Step 4 (the existing `open` step that open
 ### 📂 Step 4 — Open Reports
 After the incident-reporter completes, open the saved files for the user.
 
-Run: open [path to saved incident report file]
 Run: open [path to saved executive update file]
 ```
 
